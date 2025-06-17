@@ -1,11 +1,11 @@
 import './App.css'
-import RegTest from './components/RegTest'
+import LoginForm from './components/LoginForm'
 
 function App() {
 
   return (
     <>
-      <RegTest/>
+      <LoginForm/>
     </>
   )
 }
