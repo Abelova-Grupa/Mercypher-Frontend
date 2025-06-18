@@ -6,22 +6,34 @@ export default function RegisterForm(){
     const [password, setPassword] = useState<string>('')
 
     return (
-        <div className="registerContainer">
-            <div className="formImg"></div>
-            <div className="formInput">
-                <h1 className="formTitle">Sign up to Mercypher</h1>
-                <h3 className="formSubTitle">Username</h3>
-                <input className='registerInput' name= "username" type="text" value={username} onChange={
+        <div className="register-container">
+            <div className="register-image">
+                <img className="w-[250px] h-[250px]" src="/globe.png" alt="globe" />
+            </div>
+            <div className="register-input-container">
+                <h1 className="register-title">Sign up to Mercypher</h1>
+                <div className="register-subtitle ">
+                    <p>Username</p>
+                </div>
+                <input className='register-input' name= "username" type="text" value={username} onChange={
                     (e) => setUsername(e.target.value)
                 }/>
-                <h3 className="formSubTitle">Email</h3>
-                <input className="registerInput" name= "email" type="text" value={email} onChange={
+                <div className="register-subtitle">
+                    <p>Email</p>
+                </div>
+                <input className="register-input" name= "email" type="text" value={email} onChange={
                     (e) => setEmail(e.target.value)
                 }/>
-                <h3 className="formSubtitle">Password</h3>
-                <input className="registerInput" name= "password" type="text" value={password} onChange={
+                <div>
+
+                </div>
+                <div className="register-subtitle">
+                    <p>Password</p>
+                </div>
+                <input className="register-input" name= "password" type="password" value={password} onChange={
                     (e) => setPassword(e.target.value)
                 }/>
+                <button className="register-button">Sign up</button>
             </div>
         </div>
     )

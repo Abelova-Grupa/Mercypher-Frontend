@@ -1,13 +1,20 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router';
 
 export default function LoginForm(){
 
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
 
+    const navigate = useNavigate()
+
     const handleLogin = () => {
         console.log(username);
         console.log(password);
+    }
+
+    const handleSignUp = () => {
+        navigate('/register')
     }
     
   return (
@@ -27,7 +34,7 @@ export default function LoginForm(){
         <button className='login-button' onClick={handleLogin}>Log in</button>
         <div className='login-footer'>
             <span className='mr-2'>Don't have an account?</span>
-            <button className='signup-button'>Sign up</button>
+            <button className='signup-button' onClick={handleSignUp}>Sign up</button>
         </div>
         <div></div>
     </div>
