@@ -73,7 +73,6 @@ button:focus-visible {
   @apply flex justify-end mt-2 w-[80%] text-xl font-light;
 }
 
-
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
