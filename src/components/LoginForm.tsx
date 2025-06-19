@@ -16,6 +16,10 @@ export default function LoginForm(){
     const handleSignUp = () => {
         navigate('/register')
     }
+
+    const handleForgotPassword = () => {
+        navigate('/forgot')
+    }
     
   return (
     <div className='login-container'>
@@ -28,7 +32,7 @@ export default function LoginForm(){
             <input className='login-input mt-6' type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
         </div>
         <div className='forgot-password'>
-            <button>Forgot password?</button>
+            <button onClick={handleForgotPassword}>Forgot password?</button>
         </div>
         
         <button className='login-button' onClick={handleLogin}>Log in</button>

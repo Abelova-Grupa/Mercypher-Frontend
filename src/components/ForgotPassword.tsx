@@ -1,0 +1,22 @@
+import { useState } from "react";
+
+export default function ForgotPassword(){
+    const [email, setEmail] = useState<string>('')    
+    const [verificationCode, setVerificationCode] = useState<string>('')
+
+    return (
+        <div className="login-container">
+            <div className="h-[50%]">
+                <img src="" alt="alert-icon" />
+            </div>
+            <div className="w-[80%] mb-2 pl-2 text-xl font-semibold text-left">
+                <p>Enter your confirmation email</p>
+            </div>
+            <input className="register-input" type="text" value={email} onChange={
+                (e) => setEmail(e.target.value)
+            }/>
+            <button className="forgot-button">Send Email</button>
+        </div>
+    )
+
+}
