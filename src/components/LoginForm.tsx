@@ -1,23 +1,23 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router';
 
-export default function LoginForm(){
+export default function LoginForm() :React.ReactElement{
 
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
 
     const navigate = useNavigate()
 
-    const handleLogin = () => {
+    const handleLogin = (): void => {
         console.log(username);
         console.log(password);
     }
 
-    const handleSignUp = () => {
+    const handleSignUp = (): void => {
         navigate('/register')
     }
 
-    const handleForgotPassword = () => {
+    const handleForgotPassword = (): void => {
         navigate('/forgot')
     }
     

@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-export default function RegisterForm(){
+export default function RegisterForm() :React.ReactElement{
     const [username, setUsername] = useState<string>('')
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')

@@ -1,8 +1,7 @@
 import { useState } from "react";
 
-export default function ForgotPassword(){
+export default function ForgotPassword() :React.ReactElement{
     const [email, setEmail] = useState<string>('')    
-    const [verificationCode, setVerificationCode] = useState<string>('')
 
     return (
         <div className="login-container">

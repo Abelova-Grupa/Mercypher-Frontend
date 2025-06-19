@@ -106,6 +106,10 @@ button:focus-visible {
   @apply mt-4 w-[80%] h-[50px] bg-[#54ac64] text-white text-xl rounded-3xl;
 }
 
+.root-chat-container {
+  @apply w-full 
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
