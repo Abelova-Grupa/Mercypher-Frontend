@@ -6,7 +6,7 @@ export default function ForgotPassword() :React.ReactElement{
     return (
         <div className="login-container">
             <div className="h-[50%]">
-                <img src="" alt="alert-icon" />
+                <img src="/doodle-mailbox.png" className="w-[300px] h-[300px]" alt="alert-icon" />
             </div>
             <div className="w-[80%] mb-2 pl-2 text-xl font-semibold text-left">
                 <p>Enter your confirmation email</p>
