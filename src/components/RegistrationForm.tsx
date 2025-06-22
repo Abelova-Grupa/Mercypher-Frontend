@@ -9,7 +9,7 @@ export default function RegisterForm() :React.ReactElement{
     return (
         <div className="register-container">
             <div className="register-image">
-                <img className="w-[250px] h-[250px]" src="/globe.png" alt="globe" />
+                <img className="w-[450px] h-[450px]" src="/planet.png" alt="globe" />
             </div>
             <div className="register-input-container">
                 <h1 className="register-title">Sign up to Mercypher</h1>
