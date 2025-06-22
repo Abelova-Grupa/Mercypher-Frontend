@@ -75,7 +75,7 @@ button:focus-visible {
 }
 
 .register-container {
-  @apply flex flex-row border-2 rounded-2xl bg-[#f0eee7]
+  @apply flex flex-row border-2 rounded-2xl bg-[#f0eee7] py-4
 }
 
 .register-image {
