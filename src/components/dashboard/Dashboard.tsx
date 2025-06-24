@@ -1,11 +1,15 @@
+import DashboardChats from "./DashboardChats";
+import DashboardFilter from "./DashboardFilter";
+import DashboardHeader from "./DashboardHeader";
+import DashboardSearch from "./DashboardSearch";
 
 export default function Dashboard() :React.ReactElement{
     return (
         <div className="dashboard-container">
-            <div className="dashboard-header"></div>
-            <div className="dashboard-searchbar"></div>
-            <div className="dashboard-filter"></div>
-            <div className="dashboard-chats"></div>
+            <DashboardHeader/>
+            <DashboardSearch/>
+            <DashboardFilter/>
+            <DashboardChats/>
         </div>
     )
 }

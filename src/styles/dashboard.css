@@ -1,5 +1,82 @@
 @import "tailwindcss";
 
 .dashboard-container {
-  @apply w-[30%] bg-[#f2eee6] border-r-2 h-screen
+  @apply flex flex-col w-[30%] bg-[#f2eee6] border-r-2 border-[#ddd8d1] h-full
 }
+
+.dashboard-header {
+  @apply w-full h-[7.5%] flex justify-between
+}
+
+.dashboard-searchbar {
+  @apply  w-full h-[7.5%] flex items-center justify-center
+}
+
+.dashboard-filter {
+  @apply w-full h-[5%] flex justify-center
+}
+
+.dashboard-chats {
+  @apply w-full flex-1
+}
+
+.dashboard-title {
+  @apply flex items-center
+}
+
+.dashboard-btns {
+  @apply flex items-center mr-4
+}
+
+.add-header-btn {
+  @apply h-[32px] w-[32px]
+}
+
+.option-header-btn {
+  @apply h-[32px] w-[32px]
+}
+
+.header-title {
+  @apply text-3xl font-bold
+}
+
+.header-img {
+  @apply h-[64px] w-[64px]
+}
+
+.search-container {
+  @apply w-[90%] flex items-center border-2 rounded-4xl border-[#ddd8d1] 
+}
+
+.search-img {
+  @apply h-[24px] w-[24px] ml-2
+}
+
+.searchbar-input {
+  @apply w-full h-[30px] 
+}
+
+.filter-container {
+  @apply flex justify-start w-[90%] h-[50%]
+}
+
+.filter-btn {
+  @apply flex items-center justify-center rounded-4xl border-2 border-[#ddd8d1] p-4 bg-[#f2eee6] mr-4
+}
+
+.dashboard-chats {
+  @apply flex justify-center w-full
+}
+
+.dash-chat-container {
+  @apply w-[90%] flex justify-center rounded-2xl border-2 border-[#ddd8d1]
+}
+
+.dashboard-chat {
+  @apply flex h-[10%] w-full rounded-r-2xl border-2 border-[#ddd8d1] bg-[#e7e4d6]
+}
+
+.contact-photo {
+  @apply w-[54px] h-[54px] rounded-4xl flex items-center justify-center
+}
+

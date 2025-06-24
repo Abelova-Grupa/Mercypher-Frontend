@@ -10,11 +10,11 @@
 }
 
 .chat-info-container{
-  @apply w-full bg-[#f2eee6] h-[7.5%] border-b-2
+  @apply w-full bg-[#f2eee6] h-[7.5%] border-b-2 border-[#ddd8d1]
 }
 
 .message-bar {
-  @apply mt-[-10px] w-[95%] bg-[#f2eee6] h-[6%] border-2 rounded-4xl flex 
+  @apply mt-[-10px] w-[95%] bg-[#f2eee6] h-[6%] border-2 rounded-4xl flex border-[#ddd8d1]
 }
 
 .message-bar-emoji-btn-container{
@@ -35,4 +35,12 @@
 
 .message-bar-extra-container {
   @apply h-full flex justify-center items-center ml-8
+}
+
+.extra-btn-img {
+  @apply h-[32px] w-[32px]
+}
+
+.chat-info-container {
+  @apply flex justify-between items-center
 }
