@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+.dashboard-container {
+  @apply w-[30%] bg-[#f2eee6] border-r-2 h-screen
+}
