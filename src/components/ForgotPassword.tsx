@@ -11,7 +11,7 @@ export default function ForgotPassword() :React.ReactElement{
             <div className="w-[80%] mb-2 pl-2 text-xl font-semibold text-left">
                 <p>Enter your confirmation email</p>
             </div>
-            <input className="register-input" type="text" value={email} onChange={
+            <input className="forgot-input" type="text" value={email} onChange={
                 (e) => setEmail(e.target.value)
             }/>
             <button className="forgot-button">Send Email</button>

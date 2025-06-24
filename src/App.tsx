@@ -1,4 +1,4 @@
-import './App.css'
+import './styles/App.css'
 import LoginForm from './components/LoginForm'
 import RegisterForm from './components/RegistrationForm'
 import ForgotPassword from './components/ForgotPassword'

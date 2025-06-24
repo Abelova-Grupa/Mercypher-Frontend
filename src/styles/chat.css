@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+
+.chat-container{
+  @apply flex-1 flex flex-col items-center
+}
+
+.chat {
+  @apply w-full bg-transparent h-[86.5%]
+}
+
+.chat-info-container{
+  @apply w-full bg-[#f2eee6] h-[7.5%] border-b-2 border-[#ddd8d1]
+}
+
+.message-bar {
+  @apply mt-[-10px] w-[95%] bg-[#f2eee6] h-[6%] border-2 rounded-4xl flex border-[#ddd8d1]
+}
+
+.message-bar-emoji-btn-container{
+  @apply flex justify-center items-center ml-[20px]
+}
+
+.emoji-btn-img {
+  @apply h-[32px] w-[32px]
+}
+
+.message-bar-input-container{
+  @apply h-full w-[90%]
+}
+
+.message-bar-input {
+  @apply h-full w-full
+}
+
+.message-bar-extra-container {
+  @apply h-full flex justify-center items-center ml-8
+}
+
+.extra-btn-img {
+  @apply h-[32px] w-[32px]
+}
+
+.chat-info-container {
+  @apply flex justify-between items-center
+}
