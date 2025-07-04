@@ -1,10 +1,45 @@
 import { useState } from "react"
+import { useNavigate } from "react-router"
 
 export default function RegisterForm() :React.ReactElement{
     const [username, setUsername] = useState<string>('')
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [confirm, setConfirm] = useState<string>('')
+
+    const navigate = useNavigate()
+
+    const handleRegister = (): void => {
+        register()
+    }
+
+    const register = async function () {
+        const url = "http://localhost:8080/register"
+        try{
+            const response: Response  = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                "username": username,
+                "email": email,
+                "password": password,
+                })
+            })
+            console.log(response)
+
+            if(!response.ok){
+                throw new Error(`Response status: ${response.status}`)
+            }
+            const json = await response.json()
+            console.log(json)
+            navigate("/login")
+
+        }catch(error){
+            console.log(error)
+        }
+    }
 
     return (
         <div className="register-container">
@@ -40,7 +75,7 @@ export default function RegisterForm() :React.ReactElement{
                 <input className="register-input" name= "password" type="password" value={confirm} onChange={
                     (e) => setConfirm(e.target.value)
                 }/>
-                <button className="register-button">Sign up</button>
+                <button className="register-button" onClick={handleRegister}>Sign up</button>
             </div>
         </div>
     )
