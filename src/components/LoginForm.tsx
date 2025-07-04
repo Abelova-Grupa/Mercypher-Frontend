@@ -9,8 +9,35 @@ export default function LoginForm() :React.ReactElement{
     const navigate = useNavigate()
 
     const handleLogin = (): void => {
-        console.log(username);
-        console.log(password);
+        login()
+    }
+
+    const login = async function () {
+        const url = "http://localhost:8080/login"
+        try{
+            const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                "username": username,
+                "password": password,
+                "token": "85wc0bfg5bmg1wj3sbbqsl3yghcjtrvf"})
+            })
+            console.log(response.body)
+            if(!response.ok) {
+                throw new Error(`Response status: ${response.status}`)
+            }
+
+            const json = await response.json()
+            console.log(json)
+            navigate("/chat")
+
+        } catch(error) {
+            console.error(error)
+        }
+        
     }
 
     const handleSignUp = (): void => {
