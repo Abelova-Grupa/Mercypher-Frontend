@@ -10,6 +10,7 @@ export default function RegisterForm() :React.ReactElement{
     const navigate = useNavigate()
 
     const handleRegister = (): void => {
+        if(username === "" || email === "" || password !== confirm) return
         register()
     }
 
