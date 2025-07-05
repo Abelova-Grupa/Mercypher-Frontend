@@ -80,3 +80,6 @@
   @apply w-[54px] h-[54px] rounded-4xl flex items-center justify-center
 }
 
+.new-contact-popup {
+  @apply flex flex-col w-[300px] translate-y-[100px] bg-[#f2eee6] rounded-2xl border-2 border-[#ddd8d1] 
+}

@@ -9,6 +9,7 @@ export default function LoginForm() :React.ReactElement{
     const navigate = useNavigate()
 
     const handleLogin = (): void => {
+        if(username === "" || password === "") return
         login()
     }
 
