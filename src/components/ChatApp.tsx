@@ -7,7 +7,7 @@ export default function ChatApp() :React.ReactElement{
     return (
         <div className="root-chat-container">
             <Dashboard/>
-            <Chat/>
+            <Chat group="Abelova grupa" participants="Mile Dizna, Cane Kurbla, Mita Likar, Mita Balija" photo="/abelovci.png"/>
             <InfoPanel/>
         </div>
     )
