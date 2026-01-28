@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router';
+import { AuthService } from '../services/AuthService';
 
 export default function LoginForm() :React.ReactElement{
 
@@ -14,31 +15,9 @@ export default function LoginForm() :React.ReactElement{
     }
 
     const login = async function () {
-        const url = "http://localhost:8080/login"
-        try{
-            const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                "username": username,
-                "password": password,
-                "token": "85wc0bfg5bmg1wj3sbbqsl3yghcjtrvf"})
-            })
-            console.log(response.body)
-            if(!response.ok) {
-                throw new Error(`Response status: ${response.status}`)
-            }
-
-            const json = await response.json()
-            console.log(json)
-            navigate("/chat")
-
-        } catch(error) {
-            console.error(error)
-        }
-        
+        await AuthService.login(username, password)
+        const user = await AuthService.me()
+        console.log('Logged in as: ', user.message)
     }
 
     const handleSignUp = (): void => {
