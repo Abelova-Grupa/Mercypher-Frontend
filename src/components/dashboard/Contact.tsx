@@ -9,13 +9,13 @@ return (
     <li 
       onClick={onClick}
       className={`
-        w-full flex items-center px-5 py-4 cursor-pointer transition-all
+        w-full flex items-center px-5 py-4 cursor-pointer transition-all 
         ${isSelected 
-          ? 'bg-blue-50 border-r-4 border-blue-600' 
-          : 'hover:bg-gray-50 border-r-4 border-transparent'}
+          ? 'bg-app-border border-r-4 border-primary-active' 
+          : 'hover:bg-app-divider border-r-4 border-transparent'}
       `}
     >
-      <div className="w-12 h-12 shrink-0 rounded-full bg-gradient-to-tr from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold shadow-sm">
+      <div className="w-12 h-12 shrink-0 rounded-full bg-gradient-to-tr from-primary to-primary-active flex items-center justify-center text-white font-semibold shadow-sm">
         {username[0].toUpperCase()}
       </div>
       
