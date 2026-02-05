@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .dashboard-container {
-  @apply flex flex-col w-[30%] bg-[#f2eee6] border-r-2 border-[#ddd8d1] h-full
+  @apply flex flex-col bg-[#f2eee6] border-r-2 border-[#ddd8d1] h-full
 }
 
 .dashboard-header {
@@ -33,7 +33,7 @@
 }
 
 .option-header-btn {
-  @apply h-[32px] w-[32px]
+  @apply h-[28px] w-[28px]
 }
 
 .header-title {
