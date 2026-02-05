@@ -24,12 +24,13 @@ return (
       <div className="ml-4 flex-1 min-w-0">
         <div className="flex items-center justify-between">
           <p className="text-sm font-bold text-gray-900 truncate uppercase tracking-tight">
-            {contact.username}
+            {contact.nickname}
           </p>
-          <span className="text-[10px] text-gray-400 font-medium">12:45 PM</span>
+          <span className="text-[10px] text-gray-400 font-medium">{contact.username}</span>
         </div>
+        
         <p className="text-xs text-gray-500 truncate mt-1">
-          Tap to view message history
+          Click to view message history
         </p>
       </div>
     </li>
