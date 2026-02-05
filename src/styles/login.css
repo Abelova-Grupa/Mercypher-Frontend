@@ -21,7 +21,7 @@
 }
 
 .login-button {
-  @apply mt-4 w-[80%] h-[50px] bg-[#54ac64] text-white text-xl rounded-3xl;
+  @apply mt-4 w-[80%] h-[50px] bg-primary hover:bg-primary-hover cursor-pointer text-white text-xl rounded-3xl;
 }
 
 .login-footer {

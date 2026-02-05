@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router';
+import { replace, useNavigate } from 'react-router';
 import { AuthService } from '../services/AuthService';
 
 export default function LoginForm() :React.ReactElement{
@@ -9,16 +9,19 @@ export default function LoginForm() :React.ReactElement{
 
     const navigate = useNavigate()
 
-    const handleLogin = (): void => {
-        if(username === "" || password === "") return
-        login()
-    }
+    const handleLogin = async (): Promise<void> => {
+    if (!username || !password) return;
 
-    const login = async function () {
-        await AuthService.login(username, password)
-        const user = await AuthService.me()
-        console.log('Logged in as: ', user.message)
-    }
+        try {
+            await AuthService.login(username, password);
+            const user = await AuthService.me();
+            
+            console.log('Logged in as:', user.message);
+            navigate('/chat', { replace: true });
+        } catch (error) {
+            console.error('Login failed.');
+        }
+    };
 
     const handleSignUp = (): void => {
         navigate('/register')
