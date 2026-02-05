@@ -1,12 +1,13 @@
+import type { Contact } from "../ChatApp";
 import DashboardChats from "./DashboardChats";
 import DashboardFilter from "./DashboardFilter";
 import DashboardHeader from "./DashboardHeader";
 import DashboardSearch from "./DashboardSearch";
 
 interface DashboardProps {
-  contacts: string[];
-  selectedUser: string | null;
-  onSelect: (username: string) => void;
+  contacts: Contact[];
+  selectedUser: Contact | null;
+  onSelect: (contact: Contact) => void;
 }
 
 export default function Dashboard(props: DashboardProps) :React.ReactElement{

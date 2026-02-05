@@ -5,10 +5,15 @@ import InfoPanel from "./info/InfoPanel";
 import { useEffect, useState } from "react";
 import { ContactService } from "../services/ContactService";
 
+export type Contact = {
+    username: string,
+    nickname: string
+}
+
 export default function ChatApp() :React.ReactElement{
 
-    const [contacts, setContacts] = useState<string[]>([]);
-    const [activeUser, setActiveUser] = useState<string | null>(null);
+    const [contacts, setContacts] = useState<Contact[]>([]);
+    const [activeUser, setActiveUser] = useState<Contact | null>(null);
 
     useEffect(() => {
         ContactService.fetchContacts().then(c => {setContacts(c.contacts)});

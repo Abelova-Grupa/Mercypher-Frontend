@@ -1,10 +1,12 @@
+import type { Contact } from "../ChatApp";
+
 interface ContactProps {
-  username: string;
+  contact: Contact;
   isSelected: boolean;
   onClick: () => void;
 }
 
-export function Contact({ username, isSelected, onClick }: ContactProps) {
+export function ContactCard({ contact, isSelected, onClick }: ContactProps) {
 return (
     <li 
       onClick={onClick}
@@ -16,13 +18,13 @@ return (
       `}
     >
       <div className="w-12 h-12 shrink-0 rounded-full bg-gradient-to-tr from-primary to-primary-active flex items-center justify-center text-white font-semibold shadow-sm">
-        {username[0].toUpperCase()}
+        {contact.nickname[0].toUpperCase()}
       </div>
       
       <div className="ml-4 flex-1 min-w-0">
         <div className="flex items-center justify-between">
           <p className="text-sm font-bold text-gray-900 truncate uppercase tracking-tight">
-            {username}
+            {contact.username}
           </p>
           <span className="text-[10px] text-gray-400 font-medium">12:45 PM</span>
         </div>
