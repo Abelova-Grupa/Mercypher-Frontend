@@ -1,15 +1,20 @@
 import { useState } from "react"
+import type { MessagePayload } from "../../types/websocket-wrappers"
+import type { Contact } from "../ChatApp"
 
 interface ChatProps {
-    group: string,
-    participants: string,
+    selectedContact: Contact | null
     photo: string,
+    messagesByUser: Record<string, MessagePayload[]>
     onSend: (message: string) => void
 }
 
 export default function Chat(props: ChatProps) :React.ReactElement{
 
     const [message, setMessage] = useState("")
+
+    const key = props.selectedContact?.username
+    const messages = key ? props.messagesByUser[key] || [] : []
 
     const handleSend = () => {
         if (!message.trim()) return
@@ -25,8 +30,8 @@ export default function Chat(props: ChatProps) :React.ReactElement{
                         <img className="h-[48px] w-[48px] rounded-4xl ml-4" src={props.photo} alt="contact photo" />
                     </div>
                     <div className="ml-4">
-                        <h2>{props.group}</h2>
-                        <p>{props.participants}</p>
+                        <h2>{props.selectedContact?.nickname}</h2>
+                        <p>{props.selectedContact?.username}</p>
                     </div>
                 </div>
                 <div className="flex items-center">
@@ -40,6 +45,11 @@ export default function Chat(props: ChatProps) :React.ReactElement{
             </div>
             <div className="chat"></div>
             {/* <MessageBar/> */}
+                {messages.map((msg, index) => (
+                <div key={index}>
+                    {msg.body}
+                </div>
+                ))}
             <div className="message-bar">
                 <div className="message-bar-emoji-btn-container">
                     <button className="emoji-btn">
@@ -52,13 +62,11 @@ export default function Chat(props: ChatProps) :React.ReactElement{
                         onChange={(e) => setMessage(e.target.value)}
                         placeholder="Type message..."
                     />
-                    <button onClick={handleSend}>
-                        Send
-                    </button>
+                    
                 </div>
                 <div className="message-bar-extra-container">
-                    <button className="extra-btn">
-                        <img className="extra-btn-img" src="/file-plus.svg" alt="extra icon" />
+                    <button onClick={handleSend}>
+                        Send
                     </button>
                 </div>
             </div>

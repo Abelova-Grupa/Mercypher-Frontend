@@ -1,4 +1,5 @@
 export interface MessagePayload {
+  sender_id?: string
   receiver_id: string
   body: string
 }
