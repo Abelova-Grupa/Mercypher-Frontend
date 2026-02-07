@@ -1,12 +1,12 @@
 const API_URL = "http://localhost:8080";
 
 export const ContactService = {
-  createContact: async (contact: string) => {
+  createContact: async (contactObj: { contact: string; nickname: string }) => {
     const res = await fetch(`${API_URL}/createContact`, {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify({contact})
-    })
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify(contactObj),
+    });
 
     if (!res.ok) {
       const error = await res.json();
@@ -19,10 +19,10 @@ export const ContactService = {
 
   deleteContact: async (contact: string) => {
     const res = await fetch(`${API_URL}/deleteContact`, {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify({contact})
-    })
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify({ contact }),
+    });
 
     if (!res.ok) {
       const error = await res.json();
@@ -35,9 +35,9 @@ export const ContactService = {
 
   fetchContacts: async () => {
     const res = await fetch(`${API_URL}/contacts`, {
-        method: "GET",
-        credentials: "include",
-    })
+      method: "GET",
+      credentials: "include",
+    });
 
     if (!res.ok) {
       const error = await res.json();
@@ -46,8 +46,7 @@ export const ContactService = {
 
     const data = await res.json();
     return data;
-  }
+  },
 
   // TODO: Implement search.
-
 };
