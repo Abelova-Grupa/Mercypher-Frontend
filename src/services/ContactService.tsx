@@ -33,6 +33,22 @@ export const ContactService = {
     return data;
   },
 
+  updateContact: async (contact: string, nickname: string) => {
+    const res = await fetch(`${API_URL}/updateContact`, {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify({ contact: contact, nickname: nickname }),
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error || "Failed to update contact.");
+    }
+
+    const data = await res.json();
+    return data;
+  },
+
   fetchContacts: async () => {
     const res = await fetch(`${API_URL}/contacts`, {
       method: "GET",

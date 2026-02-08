@@ -27,6 +27,20 @@ export const AuthService = {
     });
   },
 
+  verifyEmailCode: async (username: string, code: string) => {
+    const res = await fetch(`${API_URL}/validate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, code }),
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error || "Invalid verification code");
+    }
+  },
 
   me: async () => {
     const res = await fetch(`${API_URL}/me`, {
@@ -38,5 +52,5 @@ export const AuthService = {
 
     const data = await res.json();
     return data;
-  }
+  },
 };

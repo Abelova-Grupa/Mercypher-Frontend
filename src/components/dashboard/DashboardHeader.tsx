@@ -59,6 +59,7 @@ export default function DashboardHeader({ onSave }: HeaderProps) {
         </button>
         {showNewContact && (
           <NewContact
+            title="Create contact"
             innerRef={popupRef}
             onClose={handleCloseContact}
             onSave={onSave}
