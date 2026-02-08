@@ -1,15 +1,57 @@
-// import { useState } from "react";
+import { useRef } from "react";
+import CodeInputField from "./CodeInput";
+import { Navigate, useLocation, useNavigate } from "react-router";
+import { AuthService } from "../services/AuthService";
 
 export default function EmailCodeForm(): React.ReactElement {
-  //   const [code, setCode] = useState<string>("");
+  const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const username = location.state?.username;
 
-  const handleCellInput = (id: number) => {
-    if (id == 6) id = 0;
-    const cur_cell = `cell-${id}`;
-    const next_cell = `cell-${id + 1}`;
-    document.getElementById(cur_cell)?.blur();
-    document.getElementById(next_cell)?.focus();
+  const isNum = (codeBit: string) => {
+    return !isNaN(parseInt(codeBit.trim()));
   };
+
+  const handleCellInput = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    i: number,
+  ) => {
+    const codeBit = e.target.value;
+    if (isNum(codeBit)) {
+      inputsRef.current[i + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    i: number,
+  ) => {
+    if (e.key === "Backspace" && !e.currentTarget.value && i > 0) {
+      inputsRef.current[i - 1]?.focus();
+    }
+  };
+
+  const handleCodeSend = () => {
+    const code = inputsRef.current.reduce((acc, input) => {
+      return acc + (input?.value || "");
+    }, "");
+
+    if (code.length !== 5) {
+      return;
+    }
+
+    try {
+      AuthService.verifyEmailCode(username, code);
+      navigate("/login");
+    } catch (error) {
+      console.error("Invalid auth code: " + error);
+    }
+  };
+
+  if (!location.state?.username) {
+    return <Navigate to="/register" replace />;
+  }
 
   return (
     <div className="login-container">
@@ -24,50 +66,19 @@ export default function EmailCodeForm(): React.ReactElement {
         <p>Enter your confirmation code</p>
       </div>
       <div className="code-div">
-        <input
-          type="text"
-          id="code-1"
-          className="code-cell"
-          maxLength={1}
-          onChange={() => handleCellInput(1)}
-        />
-        <input
-          type="text"
-          id="code-2"
-          className="code-cell"
-          maxLength={1}
-          onChange={() => handleCellInput(2)}
-        />
-        <input
-          type="text"
-          id="code-3"
-          className="code-cell"
-          maxLength={1}
-          onChange={() => handleCellInput(3)}
-        />
-        <input
-          type="text"
-          id="code-4"
-          className="code-cell"
-          maxLength={1}
-          onChange={() => handleCellInput(4)}
-        />
-        <input
-          type="text"
-          id="code-5"
-          className="code-cell"
-          maxLength={1}
-          onChange={() => handleCellInput(5)}
-        />
-        <input
-          type="text"
-          id="code-6"
-          className="code-cell"
-          maxLength={1}
-          onChange={() => handleCellInput(6)}
-        />
+        {[0, 1, 2, 3, 4].map((i) => (
+          <CodeInputField
+            index={i}
+            key={i}
+            inputRef={(el) => (inputsRef.current[i] = el)}
+            handleBackSpacePress={handleKeyDown}
+            handleCellInput={handleCellInput}
+          />
+        ))}
       </div>
-      <button className="forgot-button">Check code</button>
+      <button className="forgot-button" onClick={handleCodeSend}>
+        Check code
+      </button>
     </div>
   );
 }

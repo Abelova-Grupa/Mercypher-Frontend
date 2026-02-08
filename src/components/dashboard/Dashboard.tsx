@@ -30,7 +30,7 @@ export default function Dashboard(props: DashboardProps): React.ReactElement {
 
       console.log("Contact successfully created");
     } catch (error) {
-      console.error("Contact creation failed");
+      console.error("Contact creation failed: " + error);
     }
   };
 
@@ -40,6 +40,7 @@ export default function Dashboard(props: DashboardProps): React.ReactElement {
       <DashboardSearch />
       <DashboardFilter />
       <DashboardChats
+        onSetContacts={props.onSetContacts}
         contacts={props.contacts}
         selectedUser={props.selectedUser}
         onSelect={props.onSelect}

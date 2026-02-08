@@ -35,3 +35,11 @@
 .forgot-password {
   @apply flex justify-end mt-2 w-[80%] text-xl font-light;
 }
+
+.code-div {
+  @apply flex gap-4 h-12;
+}
+
+.code-cell {
+  @apply h-[100%] w-10 border-2 rounded-xl text-3xl text-center;
+}
