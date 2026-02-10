@@ -73,7 +73,7 @@ export default function ChatApp(): React.ReactElement {
     if (!conversationId) return;
 
     setMessagesByUser((prev) => ({
-      ...prev,
+      ...(prev || []),
       [conversationId]: [...(prev[conversationId] || []), msg],
     }));
   };
