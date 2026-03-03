@@ -97,7 +97,7 @@ const handleIncomingMessage = (msg: MessagePayload) => {
     });
   };
 
-  console.log(contacts);
+  // console.log(contacts); zasto brate
 
   // 1. We are still checking the session
   if (isLoading) {
@@ -128,11 +128,13 @@ const handleIncomingMessage = (msg: MessagePayload) => {
         onSetContacts={setContacts}
       />
       <Chat
+        me={me}
         selectedContact={activeUser}
         photo="/abelovci.png"
         messagesByUser={messagesByUser}
         onSend={sendMessage}
       />
+      {/* ovaj infopanel je visak? */}
       <InfoPanel />
     </div>
   );

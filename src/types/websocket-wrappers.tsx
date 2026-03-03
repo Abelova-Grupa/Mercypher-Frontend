@@ -1,7 +1,9 @@
 export interface MessagePayload {
-  sender_id?: string
-  receiver_id: string
-  body: string
+  id?: string;             
+  body: string;
+  sender_id?: string;
+  receiver_id: string;
+  timestamp?: string;
 }
 
 export interface Envelope<T = any> {

@@ -10,16 +10,21 @@ interface DashboardChatProps {
 }
 export default function DashboardChats(props: DashboardChatProps) {
   const handleContactDelete = async (username: string) => {
-    if (username === "") {
-      return;
-    }
+    if (!username) return;
+
     try {
       await ContactService.deleteContact(username);
       props.onSetContacts((prevContacts) =>
-        prevContacts.filter((contact) => contact.username !== username),
+        (prevContacts || []).filter((contact) => contact.username !== username)
       );
+
+      if (props.selectedUser?.username === username) {
+        props.onSelect(null as any); 
+      }
+      
+      console.log("Contact deleted and state cleared");
     } catch (error) {
-      console.error("Could delete contact: " + error);
+      console.error("Could not delete contact: " + error);
     }
   };
 
@@ -55,20 +60,16 @@ export default function DashboardChats(props: DashboardChatProps) {
     <div className="flex m-0">
       <div className="w-100">
         <ul>
-          {props.contacts ? (
-            props.contacts.map((contact) => (
-              <ContactCard
-                onDelete={handleContactDelete}
-                onUpdate={handleContactUpdate}
-                key={contact.username}
-                contact={contact}
-                isSelected={props.selectedUser === contact}
-                onClick={() => props.onSelect(contact)}
-              />
-            ))
-          ) : (
-            <></>
-          )}
+          {props.contacts?.map((contact) => (
+            <ContactCard
+              onDelete={handleContactDelete}
+              onUpdate={handleContactUpdate}
+              key={contact.username}
+              contact={contact}
+              isSelected={props.selectedUser?.username === contact.username}
+              onClick={() => props.onSelect(contact)}
+            />
+          ))}
         </ul>
       </div>
     </div>

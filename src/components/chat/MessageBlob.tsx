@@ -7,27 +7,25 @@ interface MessageBlobProps {
   isMe?: boolean;
 }
 
-const MessageBlob: React.FC<MessageBlobProps> = ({
-  message,
-  senderName,
-  isMe = false,
-}) => {
-  return (
-    <div
-      className={`flex flex-col mb-4 w-full items-end ${isMe ? "items-end pr-5" : "items-start pl-5"}`}
-    >
-      <span className="text-xs font-semibold text-gray-500 mb-1 px-2">
-        {senderName}
-      </span>
+const MessageBlob: React.FC<MessageBlobProps> = ({ message, senderName, isMe = false }) => {
+  const formatTime = (ts: any) => {
+    if (!ts) return "13:12";
+    const n = Number(ts);
+    // If it's seconds (10 digits), multiply by 1000 for JS
+    const date = n < 10000000000 ? new Date(n * 1000) : new Date(n);
+    return date.getHours() + ":" + String(date.getMinutes()).padStart(2, '0');
+  };
 
-      <div
-        className={`max-w-[75%] px-4 py-2 rounded-2xl shadow-sm border  ${
-          isMe
-            ? "bg-[#ddd8d1] text-gray-800 rounded-tr-none border-[#ccc7c0] "
-            : "bg-[#f2eee6] text-gray-800 rounded-tl-none border-[#ddd8d1] "
-        }`}
-      >
-        <p className="text-sm leading-relaxed break-words">{message.body}</p>
+  return (
+    <div className={`flex flex-col mb-2 w-full ${isMe ? "items-end pr-5" : "items-start pl-5"}`}>
+      {!isMe && senderName && <span className="text-[10px] font-bold uppercase text-black-200 mb-0.5">{senderName}</span>}
+      <div className={`max-w-[85%] px-3 py-2 shadow-sm border ${
+          isMe ? "bg-[#ddd8d1] rounded-2xl rounded-tr-none border-[#ccc7c0]" : "bg-[#f2eee6] rounded-2xl rounded-tl-none border-[#ddd8d1]"
+      }`}>
+        <p className="text-[14px] leading-snug break-words">{message.body}</p>
+        <div className="flex justify-end mt-1">
+          <span className="text-[9px] opacity-40 font-medium">{formatTime(message.timestamp)}</span>
+        </div>
       </div>
     </div>
   );

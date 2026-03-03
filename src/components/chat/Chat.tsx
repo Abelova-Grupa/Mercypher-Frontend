@@ -4,6 +4,7 @@ import type { Contact } from "../ChatApp";
 import MessageBlob from "./MessageBlob";
 interface ChatProps {
   selectedContact: Contact | null;
+  me: string;
   photo: string;
   messagesByUser: Record<string, MessagePayload[]>;
   onSend: (message: string) => void;
@@ -20,6 +21,17 @@ export default function Chat(props: ChatProps): React.ReactElement {
     props.onSend(message);
     setMessage("");
   };
+  if (!props.selectedContact) {
+    return (
+      <div className="chat-container flex items-center justify-center">
+        <div className="bg-white/90 px-8 py-4 rounded-full shadow-lg transform transition-all">
+          <p className="text-black font-medium text-center">
+            Select one of your contacts to start messaging!
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="chat-container">
@@ -42,23 +54,17 @@ export default function Chat(props: ChatProps): React.ReactElement {
             <img className="h-[24px] w-[24px]" src="/search.svg" alt="search" />
           </button>
           <button className="mr-4">
-            <img
-              className="h-[28px] w-[28px]"
-              src="/three-dots.svg"
-              alt="options"
-            />
+            <img className="h-[28px] w-[28px]" src="/three-dots.svg" alt="options" />
           </button>
         </div>
       </div>
       <div className="chat">
         {messages.map((msg, index) => (
-          <div key={index}>
+          <div key={`${msg.sender_id}-${index}`}>
             <MessageBlob
-              {...{
-                message: msg,
-                senderName: msg.sender_id,
-                isMe: msg.receiver_id === key ? true : false,
-              }}
+              message={msg}
+              senderName={msg.sender_id}
+              isMe={msg.sender_id === props.me}
             />
           </div>
         ))}
@@ -66,17 +72,16 @@ export default function Chat(props: ChatProps): React.ReactElement {
       <div className="message-bar">
         <div className="message-bar-emoji-btn-container">
           <button className="emoji-btn">
-            <img
-              className="emoji-btn-img"
-              src="/smile-square.svg"
-              alt="emoji icon"
-            />
+            <img className="emoji-btn-img" src="/smile-square.svg" alt="emoji icon" />
           </button>
         </div>
         <div className="message-bar-input-container">
           <input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSend();
+            }}
             placeholder="Type message..."
           />
         </div>
