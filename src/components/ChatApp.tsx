@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { ContactService } from "../services/ContactService";
 import type { MessagePayload } from "../types/websocket-wrappers";
 import { AuthService } from "../services/AuthService";
+import { useNavigate } from "react-router";
 
 export type Contact = {
   username: string;
@@ -13,6 +14,7 @@ export type Contact = {
 };
 
 export default function ChatApp(): React.ReactElement {
+  const navigate = useNavigate();
   const wsRef = useRef<WebSocket | null>(null);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [activeUser, setActiveUser] = useState<Contact | null>(null);
@@ -20,14 +22,24 @@ export default function ChatApp(): React.ReactElement {
     Record<string, MessagePayload[]>
   >({});
   const [me, setMe] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   // TODO: AA
 
-  useEffect(() => {
-    AuthService.me().then((m) => {
-      setMe(m.message);
-    });
-  }, []);
+useEffect(() => {
+    setIsLoading(true);
+    AuthService.me()
+      .then((m) => {
+        setMe(m.message);
+      })
+      .catch(() => {
+        // Redirect to login if the user session is invalid
+        navigate("/login");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [navigate]);
 
   useEffect(() => {
     if (!me) return; // wait until user is loaded
@@ -47,12 +59,16 @@ export default function ChatApp(): React.ReactElement {
     };
     ws.onclose = () => console.log("Disconnected");
     wsRef.current = ws;
+    
 
-    return () => ws.close();
+    return () => {
+      ws.close();
+      wsRef.current = null;
+    }
   }, [me]);
 
   const sendMessage = (messageText: string) => {
-    if (!wsRef.current || !activeUser || !me) return;
+    if (!wsRef.current || !activeUser || !me || wsRef.current.readyState !== WebSocket.OPEN) return;
 
     const msg: MessagePayload = {
       sender_id: me,
@@ -66,37 +82,58 @@ export default function ChatApp(): React.ReactElement {
     // handleIncomingMessage(msg)
   };
 
-  const handleIncomingMessage = (msg: MessagePayload) => {
-    const conversationId =
-      msg.sender_id === me ? msg.receiver_id : msg.sender_id;
+const handleIncomingMessage = (msg: MessagePayload) => {
+    const conversationId = msg.sender_id === me ? msg.receiver_id : msg.sender_id;
 
     if (!conversationId) return;
 
-    setMessagesByUser((prev) => ({
-      ...(prev || []),
-      [conversationId]: [...(prev[conversationId] || []), msg],
-    }));
+    setMessagesByUser((prev) => {
+      const existingMessages = prev[conversationId] || [];
+      
+      return {
+        ...prev,
+        [conversationId]: [...existingMessages, msg],
+      };
+    });
   };
 
   console.log(contacts);
 
-  if (!me) return <div>Loading</div>;
-  else
+  // 1. We are still checking the session
+  if (isLoading) {
     return (
-      <div className="root-chat-container">
-        <Dashboard
-          contacts={contacts}
-          selectedUser={activeUser}
-          onSelect={setActiveUser}
-          onSetContacts={setContacts}
-        />
-        <Chat
-          selectedContact={activeUser}
-          photo="/abelovci.png"
-          messagesByUser={messagesByUser}
-          onSend={sendMessage}
-        />
-        <InfoPanel />
+      <div className="loading-container">
+        <p>Establishing secure connection...</p>
       </div>
     );
+  }
+
+  // 2. We finished loading, but 'me' is empty (Auth failed)
+  if (!me) {
+    return (
+      <div className="error-container">
+        <h2>Session Expired</h2>
+        <button onClick={() => navigate("/login")}>Go to Login</button>
+      </div>
+    );
+  }
+
+  // 3. User is authorized
+  return (
+    <div className="root-chat-container">
+      <Dashboard
+        contacts={contacts}
+        selectedUser={activeUser}
+        onSelect={setActiveUser}
+        onSetContacts={setContacts}
+      />
+      <Chat
+        selectedContact={activeUser}
+        photo="/abelovci.png"
+        messagesByUser={messagesByUser}
+        onSend={sendMessage}
+      />
+      <InfoPanel />
+    </div>
+  );
 }

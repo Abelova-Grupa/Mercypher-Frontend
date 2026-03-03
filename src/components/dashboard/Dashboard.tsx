@@ -23,10 +23,13 @@ export default function Dashboard(props: DashboardProps): React.ReactElement {
         nickname: contact.nickname,
       });
 
-      props.onSetContacts((prev) => [
-        ...prev,
-        { username: contact.username, nickname: contact.nickname },
-      ]);
+      props.onSetContacts((prev) => {
+        const safePrev = prev || []; 
+        return [
+          ...safePrev,
+          { username: contact.username, nickname: contact.nickname },
+        ];
+      });
 
       console.log("Contact successfully created");
     } catch (error) {
