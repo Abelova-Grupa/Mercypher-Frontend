@@ -81,6 +81,7 @@ export default function NewContact({
             type="text"
             placeholder=""
             value={username}
+            readOnly={title === "Update contact"}
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>

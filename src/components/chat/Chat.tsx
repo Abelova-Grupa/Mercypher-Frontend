@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { MessagePayload } from "../../types/websocket-wrappers";
 import type { Contact } from "../ChatApp";
 import MessageBlob from "./MessageBlob";
+import MessageBar from "./MessageBar";
 interface ChatProps {
   selectedContact: Contact | null;
   me: string;
@@ -11,11 +12,15 @@ interface ChatProps {
 }
 
 export default function Chat(props: ChatProps): React.ReactElement {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [message, setMessage] = useState("");
-
+  
   const key = props.selectedContact?.username;
   const messages = key ? props.messagesByUser[key] || [] : [];
-
+  
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
   const handleSend = () => {
     if (!message.trim()) return;
     props.onSend(message);
@@ -34,7 +39,7 @@ export default function Chat(props: ChatProps): React.ReactElement {
   }
 
   return (
-    <div className="chat-container">
+    <div className="chat-container flex flex-col h-screen max-h-screen w-full overflow-hidden">
       <div className="chat-info-container">
         <div className="flex">
           <div>
@@ -58,7 +63,7 @@ export default function Chat(props: ChatProps): React.ReactElement {
           </button>
         </div>
       </div>
-      <div className="chat">
+      <div className="chat flex-1 overflow-y-auto p-4">
         {messages.map((msg, index) => (
           <div key={`${msg.sender_id}-${index}`}>
             <MessageBlob
@@ -68,27 +73,13 @@ export default function Chat(props: ChatProps): React.ReactElement {
             />
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
-      <div className="message-bar">
-        <div className="message-bar-emoji-btn-container">
-          <button className="emoji-btn">
-            <img className="emoji-btn-img" src="/smile-square.svg" alt="emoji icon" />
-          </button>
-        </div>
-        <div className="message-bar-input-container">
-          <input
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSend();
-            }}
-            placeholder="Type message..."
-          />
-        </div>
-        <div className="message-bar-extra-container">
-          <button onClick={handleSend}>Send</button>
-        </div>
-      </div>
+      <MessageBar 
+        value={message} 
+        onChange={setMessage} 
+        onSend={handleSend} 
+      />
     </div>
   );
 }

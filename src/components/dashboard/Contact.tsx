@@ -47,7 +47,7 @@ export function ContactCard({
 
   const toggleMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    setIsDropDownOpen(true);
+    setIsDropDownOpen(!isDropDownOpen); // Allow closing by clicking the dots again
   };
 
   const handleCloseContact = () => {
@@ -72,7 +72,7 @@ export function ContactCard({
       `}
     >
       <div className="w-12 h-12 shrink-0 rounded-full bg-gradient-to-tr from-primary to-primary-active flex items-center justify-center text-white font-semibold shadow-sm">
-        {contact?.nickname[0].toUpperCase()}
+        {contact?.nickname ? contact.nickname[0].toUpperCase() : "?"}
       </div>
 
       <div className="ml-4 flex-1 min-w-0">
@@ -104,7 +104,7 @@ export function ContactCard({
             </button>
 
             {isDropDownOpen && (
-              <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-100 rounded-lg shadow-xl z-50 overflow-hidden">
+              <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-100 rounded-lg shadow-xl z-50 overflow-hidden z-[60]">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -130,15 +130,20 @@ export function ContactCard({
             )}
           </div>
         </div>
-        {showNewContact && (
-          <NewContact
-            title="Update contact"
-            innerRef={popupRef}
-            onClose={handleCloseContact}
-            onSave={onUpdate}
-          />
-        )}
-
+{showNewContact && (
+  <div className="fixed top-0 left-0 w-[100vw] h-[100vh] z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-[1px]">
+    <div onClick={(e) => e.stopPropagation()}>
+      <NewContact
+        title="Update contact"
+        innerRef={popupRef}
+        onClose={handleCloseContact}
+        onSave={onUpdate}
+        initUsername={contact.username} 
+        initNickname={contact.nickname}
+      />
+    </div>
+  </div>
+)}
         <div className="flex justify-between items-center mt-1">
           <p className="text-xs text-gray-500 truncate">
             Click to view history
