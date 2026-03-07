@@ -82,9 +82,6 @@ export default function Chat(props: ChatProps): React.ReactElement {
         </div>
         <div className="flex items-center">
           <button className="mr-4">
-            <img className="h-[24px] w-[24px]" src="/search.svg" alt="search" />
-          </button>
-          <button className="mr-4">
             <img className="h-[28px] w-[28px]" src="/three-dots.svg" alt="options" />
           </button>
         </div>

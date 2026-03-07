@@ -65,13 +65,13 @@ export default function DashboardHeader({ onSave }: HeaderProps) {
             onSave={onSave}
           />
         )}
-        <button className="options-btn">
+        {/* <button className="options-btn">
           <img
             className="option-header-btn"
             src="/three-dots.svg"
             alt="add button"
           />
-        </button>
+        </button> */}
       </div>
     </div>
   );
