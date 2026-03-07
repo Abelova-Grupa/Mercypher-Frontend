@@ -26,7 +26,7 @@ export default function ChatApp(): React.ReactElement {
 
   // TODO: AA
 
-useEffect(() => {
+  useEffect(() => {
     setIsLoading(true);
     AuthService.me()
       .then((m) => {
@@ -66,6 +66,12 @@ useEffect(() => {
       wsRef.current = null;
     }
   }, [me]);
+  // loading messages for the selected contact
+  useEffect(() => {
+  if (activeUser && !messagesByUser[activeUser.username]) {
+    fetchHistory(activeUser.username);
+  }
+}, [activeUser]);
 
   const sendMessage = (messageText: string) => {
     if (!wsRef.current || !activeUser || !me || wsRef.current.readyState !== WebSocket.OPEN) return;
@@ -82,7 +88,7 @@ useEffect(() => {
     // handleIncomingMessage(msg)
   };
 
-const handleIncomingMessage = (msg: MessagePayload) => {
+  const handleIncomingMessage = (msg: MessagePayload) => {
     const conversationId = msg.sender_id === me ? msg.receiver_id : msg.sender_id;
 
     if (!conversationId) return;
@@ -95,6 +101,42 @@ const handleIncomingMessage = (msg: MessagePayload) => {
         [conversationId]: [...existingMessages, msg],
       };
     });
+  };
+
+  const fetchHistory = async (contactUsername: string, isLoadMore = false) => {
+    const currentMessages = messagesByUser[contactUsername] || [];
+    
+    // If loading more, use the timestamp of the OLDEST message we have.
+    // Otherwise, use "now" to get the most recent 20.
+    const lastSeen = isLoadMore && currentMessages.length > 0 
+      ? currentMessages[0].timestamp 
+      : Math.floor(Date.now() / 1000);
+
+    try {
+      const res = await fetch("http://localhost:8080/loadMessages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          contact: contactUsername,
+          limit: 20,
+          lastSeen: lastSeen
+        }),
+      });
+      const data = await res.json();
+      const history = [...data.messages].reverse(); // Array of MessagePayload
+
+      setMessagesByUser((prev) => {
+        const existing = prev[contactUsername] || [];
+        return {
+          ...prev,
+          // add old messages to the start of the array
+          [contactUsername]: isLoadMore ? [...history, ...existing] : history,
+        };
+      });
+    } catch (err) {
+      console.error("Failed to fetch history:", err);
+    }
   };
 
   // console.log(contacts); zasto brate
@@ -133,6 +175,9 @@ const handleIncomingMessage = (msg: MessagePayload) => {
         photo="/abelovci.png"
         messagesByUser={messagesByUser}
         onSend={sendMessage}
+        onLoadMore={() => {
+          if (activeUser) fetchHistory(activeUser.username, true);
+        }}
       />
       {/* ovaj infopanel je visak? */}
       <InfoPanel />
