@@ -59,7 +59,7 @@ export default function ChatApp(): React.ReactElement {
     };
     ws.onclose = () => console.log("Disconnected");
     wsRef.current = ws;
-    
+
 
     return () => {
       ws.close();
@@ -68,10 +68,10 @@ export default function ChatApp(): React.ReactElement {
   }, [me]);
   // loading messages for the selected contact
   useEffect(() => {
-  if (activeUser && !messagesByUser[activeUser.username]) {
-    fetchHistory(activeUser.username);
-  }
-}, [activeUser]);
+    if (activeUser && !messagesByUser[activeUser.username]) {
+      fetchHistory(activeUser.username);
+    }
+  }, [activeUser]);
 
   const sendMessage = (messageText: string) => {
     if (!wsRef.current || !activeUser || !me || wsRef.current.readyState !== WebSocket.OPEN) return;
@@ -95,7 +95,7 @@ export default function ChatApp(): React.ReactElement {
 
     setMessagesByUser((prev) => {
       const existingMessages = prev[conversationId] || [];
-      
+
       return {
         ...prev,
         [conversationId]: [...existingMessages, msg],
@@ -105,11 +105,11 @@ export default function ChatApp(): React.ReactElement {
 
   const fetchHistory = async (contactUsername: string, isLoadMore = false) => {
     const currentMessages = messagesByUser[contactUsername] || [];
-    
+
     // If loading more, use the timestamp of the OLDEST message we have.
     // Otherwise, use "now" to get the most recent 20.
-    const lastSeen = isLoadMore && currentMessages.length > 0 
-      ? currentMessages[0].timestamp 
+    const lastSeen = isLoadMore && currentMessages.length > 0
+      ? currentMessages[0].timestamp
       : Math.floor(Date.now() / 1000);
 
     try {
@@ -160,6 +160,43 @@ export default function ChatApp(): React.ReactElement {
     );
   }
 
+  const handleContactDelete = async (username: string) => {
+    if (!username) return;
+    try {
+      await ContactService.deleteContact(username);
+      setContacts((prev) => prev.filter((c) => c.username !== username));
+      if (activeUser?.username === username) {
+        setActiveUser(null);
+      }
+    } catch (error) {
+      console.error("Delete failed:", error);
+    }
+  };
+
+  const handleContactUpdate = async (contact: { username: string; nickname: string }) => {
+    if (!contact.username || !contact.nickname) return;
+    try {
+      await ContactService.updateContact(contact.username, contact.nickname);
+      setContacts((prev) =>
+        prev.map((c) => (c.username === contact.username ? { ...c, nickname: contact.nickname } : c))
+      );
+    } catch (error) {
+      console.error("Update failed:", error);
+    }
+  };
+
+  const handleSaveContact = async (contact: { username: string; nickname: string }) => {
+    try {
+      await ContactService.createContact({
+        contact: contact.username,
+        nickname: contact.nickname,
+      });
+      setContacts((prev) => [...prev, { username: contact.username, nickname: contact.nickname }]);
+    } catch (error) {
+      console.error("Creation failed:", error);
+    }
+  };
+
   // 3. User is authorized
   return (
     <div className="root-chat-container">
@@ -167,7 +204,9 @@ export default function ChatApp(): React.ReactElement {
         contacts={contacts}
         selectedUser={activeUser}
         onSelect={setActiveUser}
-        onSetContacts={setContacts}
+        onSave={handleSaveContact}
+        onDelete={handleContactDelete}
+        onUpdate={handleContactUpdate}
       />
       <Chat
         me={me}
@@ -175,6 +214,8 @@ export default function ChatApp(): React.ReactElement {
         photo="/abelovci.png"
         messagesByUser={messagesByUser}
         onSend={sendMessage}
+        onDelete={handleContactDelete}
+        onUpdate={handleContactUpdate}
         onLoadMore={() => {
           if (activeUser) fetchHistory(activeUser.username, true);
         }}

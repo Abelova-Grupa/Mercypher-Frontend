@@ -10,15 +10,17 @@ interface ChatProps {
   messagesByUser: Record<string, MessagePayload[]>;
   onSend: (message: string) => void;
   onLoadMore: (activeUser: Contact, isLoadMore: boolean) => void;
+  onDelete: (username: string) => Promise<void>;
+  onUpdate: (contact: { username: string; nickname: string }) => Promise<void>;
 }
 
 export default function Chat(props: ChatProps): React.ReactElement {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [message, setMessage] = useState("");
-  
+
   const key = props.selectedContact?.username;
   const messages = key ? props.messagesByUser[key] || [] : [];
-  
+
   const handleSend = () => {
     if (!message.trim()) return;
     props.onSend(message);
@@ -50,7 +52,8 @@ export default function Chat(props: ChatProps): React.ReactElement {
     // 2. If this is the initial load (exactly 20 messages), scroll to bottom
     if (isAtBottom || messages.length === 20) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }}, [messages]);
+    }
+  }, [messages]);
 
   if (!props.selectedContact) {
     return (
@@ -86,26 +89,26 @@ export default function Chat(props: ChatProps): React.ReactElement {
           </button>
         </div>
       </div>
-        <div
-          ref={chatContainerRef} 
-          onScroll={handleScroll} 
-          className="chat flex-1 overflow-y-auto p-4 anchor-none"
-        >
+      <div
+        ref={chatContainerRef}
+        onScroll={handleScroll}
+        className="chat flex-1 overflow-y-auto p-4 anchor-none"
+      >
         {messages.map((msg, index) => (
           <div key={`${msg.sender_id}-${index}`}>
             <MessageBlob
               message={msg}
               senderName={msg.sender_id}
               isMe={msg.sender_id === props.me}
-              />
+            />
           </div>
         ))}
         <div ref={messagesEndRef} />
-        </div>
-      <MessageBar 
-        value={message} 
-        onChange={setMessage} 
-        onSend={handleSend} 
+      </div>
+      <MessageBar
+        value={message}
+        onChange={setMessage}
+        onSend={handleSend}
       />
     </div>
   );
