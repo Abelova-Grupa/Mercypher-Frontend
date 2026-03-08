@@ -3,6 +3,7 @@ import type { MessagePayload } from "../../types/websocket-wrappers";
 import type { Contact } from "../ChatApp";
 import MessageBlob from "./MessageBlob";
 import MessageBar from "./MessageBar";
+import NewContact from "../dashboard/NewContact";
 interface ChatProps {
   selectedContact: Contact | null;
   me: string;
@@ -55,6 +56,32 @@ export default function Chat(props: ChatProps): React.ReactElement {
     }
   }, [messages]);
 
+  // code for 3 dots button
+  const [isDropDownOpen, setIsDropDownOpen] = useState<boolean>(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [showNewContact, setShowNewContact] = useState<boolean>(false);
+  const popupRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (isDropDownOpen && menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setIsDropDownOpen(false);
+      }
+      if (showNewContact && popupRef.current && !popupRef.current.contains(e.target as Node)) {
+        setShowNewContact(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isDropDownOpen, showNewContact]);
+
+  const toggleMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsDropDownOpen(!isDropDownOpen);
+  };
+  //
+
   if (!props.selectedContact) {
     return (
       <div className="chat-container flex items-center justify-center">
@@ -79,15 +106,59 @@ export default function Chat(props: ChatProps): React.ReactElement {
             />
           </div>
           <div className="ml-4">
-            <h2>{props.selectedContact?.nickname}</h2>
-            <p>{props.selectedContact?.username}</p>
+            <h2 className="text-lg font-semibold text-slate-800 dark:text-black leading-tight">{props.selectedContact?.nickname}</h2>
+            <p className="text-sm font-medium text-slate-500 dark:text-black">@{props.selectedContact?.username}</p>
           </div>
         </div>
-        <div className="flex items-center">
-          <button className="mr-4">
-            <img className="h-[28px] w-[28px]" src="/three-dots.svg" alt="options" />
-          </button>
-        </div>
+        <div className="flex items-center relative" ref={menuRef}>
+  <button
+    onClick={toggleMenu}
+    className="p-1 hover:bg-gray-200 rounded-full text-gray-400 mr-4 transition-all cursor-pointer"
+  >
+    <img className="h-[28px] w-[28px]" src="/three-dots.svg" alt="options" />
+  </button>
+
+  {isDropDownOpen && (
+    <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-100 rounded-lg shadow-xl z-50 overflow-hidden z-[60]">
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsDropDownOpen(false);
+          setShowNewContact(true);
+        }}
+        className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+      >
+        Edit contact
+      </button>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsDropDownOpen(false);
+          if (props.selectedContact) props.onDelete(props.selectedContact.username);
+        }}
+        className="w-full px-4 py-2 text-left text-xs text-red-600 hover:bg-red-50 flex items-center gap-2"
+      >
+        Delete
+      </button>
+    </div>
+  )}
+</div>
+
+{/* The Modal / Popup */}
+{showNewContact && props.selectedContact && (
+  <div className="fixed top-0 left-0 w-[100vw] h-[100vh] z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-[1px]">
+    <div onClick={(e) => e.stopPropagation()}>
+      <NewContact
+        title="Update contact"
+        innerRef={popupRef}
+        onClose={() => setShowNewContact(false)}
+        onSave={props.onUpdate}
+        initUsername={props.selectedContact.username} 
+        initNickname={props.selectedContact.nickname}
+      />
+    </div>
+  </div>
+)}
       </div>
       <div
         ref={chatContainerRef}

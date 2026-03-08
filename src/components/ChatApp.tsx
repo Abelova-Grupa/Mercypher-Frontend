@@ -180,6 +180,9 @@ export default function ChatApp(): React.ReactElement {
       setContacts((prev) =>
         prev.map((c) => (c.username === contact.username ? { ...c, nickname: contact.nickname } : c))
       );
+      if (activeUser?.username === contact.username) {
+        setActiveUser({ ...activeUser, nickname: contact.nickname });
+      }
     } catch (error) {
       console.error("Update failed:", error);
     }
