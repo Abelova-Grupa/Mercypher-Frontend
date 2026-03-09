@@ -106,10 +106,15 @@ export default function ChatApp(): React.ReactElement {
   const sendMessage = (messageText: string) => {
     if (!wsRef.current || !activeSelection || !me || wsRef.current.readyState !== WebSocket.OPEN) return;
 
+    const encodedBody = btoa(encodeURIComponent(messageText).replace(/%([0-9A-F]{2})/g,
+        function toSolidBytes(match, p1) {
+            return String.fromCharCode(Number('0x' + p1));
+        }));
+
     const msg: MessagePayload = {
       sender_id: me,
       receiver_id: activeSelection.id, // this should be username for contacts and group_id for groups
-      body: messageText,
+      body: encodedBody,
     };
 
     wsRef.current.send(JSON.stringify({ type: "message", data: msg }));
