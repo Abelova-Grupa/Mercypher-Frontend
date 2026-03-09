@@ -1,26 +1,45 @@
-import type { Contact } from "../ChatApp";
+import type { Contact, Selection } from "../ChatApp";
+import type { Group } from "../../services/GroupService";
 import { ContactCard } from "./Contact";
-
+import { GroupCard } from "./GroupCard";
 interface DashboardChatProps {
-  contacts: Contact[] | null;
-  selectedUser: Contact | null;
-  onSelect: (contact: Contact) => void;
+  onUpdateGroup: (groupId: string, groupData: { groupName: string; members: string[] }) => Promise<void>;
+  onDeleteGroup: (groupId: string) => Promise<void>;
+  contacts: Contact[];
+  groups: Group[];
+  activeSelection: Selection | null;
+  onSelect: (id: string, type: "contact" | "group") => void;
   onDelete: (username: string) => Promise<void>;
   onUpdate: (contact: { username: string; nickname: string }) => Promise<void>;
+
 }
 export default function DashboardChats(props: DashboardChatProps) {
   return (
-    <div className="flex m-0">
-      <div className="w-100">
+    <div className="flex m-0 overflow-y-auto">
+      <div className="w-full">
         <ul>
-          {props.contacts?.map((contact) => (
+          {props.groups.map((group) => (
+            <GroupCard
+              key={group.id}
+              group={group}
+              allContacts={props.contacts}
+              isSelected={props.activeSelection?.id === group.id}
+              onClick={() => props.onSelect(group.id, "group")}
+              onDelete={props.onDeleteGroup}
+              onUpdate={props.onUpdateGroup}
+            />
+          ))}
+          {props.contacts.map((contact) => (
             <ContactCard
-              onDelete={props.onDelete}
-              onUpdate={props.onUpdate}
               key={contact.username}
               contact={contact}
-              isSelected={props.selectedUser?.username === contact.username}
-              onClick={() => props.onSelect(contact)}
+              onDelete={props.onDelete}
+              onUpdate={props.onUpdate}
+              isSelected={
+                props.activeSelection?.id === contact.username &&
+                props.activeSelection?.type === "contact"
+              }
+              onClick={() => props.onSelect(contact.username, "contact")}
             />
           ))}
         </ul>

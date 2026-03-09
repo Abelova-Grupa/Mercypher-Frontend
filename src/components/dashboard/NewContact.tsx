@@ -33,7 +33,7 @@ export default function NewContact({
 
   return (
     <div
-      className={`new-contact-popup absolute z-50 shadow-xl top-[10px] ${title === "Update contact" ? "left-60" : ""}`}
+      className={`new-contact-popup absolute z-50 top-[10px] ${title === "Update contact" ? "left-60" : ""}`}
       ref={innerRef}
     >
       <div className="w-full flex items-center p-4 border-b border-[#ddd8d1]">

@@ -43,7 +43,7 @@ export default function NewGroup({
 
   return (
     <div
-      className="new-contact-popup absolute z-50 shadow-xl top-[10px] left-[-20px] w-[350px] bg-[#fdfcf3] rounded-lg overflow-hidden"
+      className="new-contact-popup absolute z-50 shadow-xl top-[10px] bg-[#fdfcf3] rounded-lg overflow-hidden"
       ref={innerRef}
     >
       <div className="w-full flex items-center p-4 border-b border-[#ddd8d1]">
@@ -74,9 +74,9 @@ export default function NewGroup({
             <div className="w-24 h-24 bg-[#ddd8d1] rounded-full flex items-center justify-center overflow-hidden relative">
               <img
                 src="/account.svg"
-                className="w-14 h-14 opacity-30 absolute top-5 left-3"
+                className="w-14 h-14 opacity-63 absolute top-5 left-3"
                 alt="Avatar Background"
-                style={{ transform: 'scale(0.95)' }} 
+                style={{ transform: 'scale(0.96)' }} 
               />
               <img
                 src="/account.svg"

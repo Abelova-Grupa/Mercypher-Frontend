@@ -64,10 +64,9 @@ export function ContactCard({
       onClick={onClick}
       className={`
         w-full flex items-center px-5 py-4 cursor-pointer transition-all 
-        ${
-          isSelected
-            ? "bg-app-border border-r-4 border-primary-active"
-            : "hover:bg-app-divider border-r-4 border-transparent"
+        ${isSelected
+          ? "bg-app-border border-r-4 border-primary-active"
+          : "hover:bg-app-divider border-r-4 border-transparent"
         }
       `}
     >
@@ -130,20 +129,20 @@ export function ContactCard({
             )}
           </div>
         </div>
-{showNewContact && (
-  <div className="fixed top-0 left-0 w-[100vw] h-[100vh] z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-[1px]">
-    <div onClick={(e) => e.stopPropagation()}>
-      <NewContact
-        title="Update contact"
-        innerRef={popupRef}
-        onClose={handleCloseContact}
-        onSave={onUpdate}
-        initUsername={contact.username} 
-        initNickname={contact.nickname}
-      />
-    </div>
-  </div>
-)}
+        {showNewContact && (
+          <div className="fixed top-0 left-0 w-[100vw] h-[100vh] z-[9999] flex items-center justify-center bg-black/20 backdrop-blur-[0.5px]">
+            <div onClick={(e) => e.stopPropagation()}>
+              <NewContact
+                title="Update contact"
+                innerRef={popupRef}
+                onClose={handleCloseContact}
+                onSave={onUpdate}
+                initUsername={contact.username}
+                initNickname={contact.nickname}
+              />
+            </div>
+          </div>
+        )}
         <div className="flex justify-between items-center mt-1">
           <p className="text-xs text-gray-500 truncate">
             Click to view history

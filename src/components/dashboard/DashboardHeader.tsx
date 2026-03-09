@@ -54,6 +54,8 @@ export default function DashboardHeader({ contacts, onSave, onGroupSave }: Heade
         />
         <h1 className="header-title">Mercypher</h1>
       </div>
+      <div className="w-2"></div>
+      <div className="w-2"></div>
 
       <div className="dashboard-btns">
         <button
@@ -100,15 +102,17 @@ export default function DashboardHeader({ contacts, onSave, onGroupSave }: Heade
           </svg>
         </button>
         {showNewContact && (
+          <div className="fixed inset-0 w-screen h-screen z-[9999] bg-black/20 backdrop-blur-[0.5px] flex justify-start items-start p-10">
           <NewContact
             title="Create contact"
             innerRef={popupRef}
             onClose={handleCloseContact}
             onSave={onSave}
           />
+          </div>
         )}
         {showNewGroup && (
-          <div className="absolute z-50 shadow-xl top-[10px]">
+          <div className="fixed inset-0 w-screen h-screen z-[9999] bg-black/20 backdrop-blur-[0.5px] flex justify-start items-start p-10">
             <div onClick={(e) => e.stopPropagation()}>
               <NewGroup
                 title="Create Group"

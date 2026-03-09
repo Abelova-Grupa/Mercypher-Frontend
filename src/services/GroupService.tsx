@@ -58,6 +58,7 @@ export const GroupService = {
 
         if (!res.ok) {
             const error = await res.json();
+            console.error("SERVER ERROR DETAILS:", error);
             throw new Error(error.error || "Failed to delete group.");
         }
 

@@ -1,7 +1,6 @@
 import type React from "react";
 import Chat from "./chat/Chat";
 import Dashboard from "./dashboard/Dashboard";
-import InfoPanel from "./info/InfoPanel";
 import { useEffect, useRef, useState } from "react";
 import { ContactService } from "../services/ContactService";
 import type { MessagePayload } from "../types/websocket-wrappers";
@@ -14,19 +13,37 @@ export type Contact = {
   nickname: string;
 };
 
+export type Selection = {
+  id: string; // This will be username OR group_id
+  type: "contact" | "group";
+};
+
 export default function ChatApp(): React.ReactElement {
   const navigate = useNavigate();
   const wsRef = useRef<WebSocket | null>(null);
   const [contacts, setContacts] = useState<Contact[]>([]);
-  const [activeUser, setActiveUser] = useState<Contact | null>(null);
-  const [messagesByUser, setMessagesByUser] = useState<
-    Record<string, MessagePayload[]>
-  >({});
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [activeSelection, setActiveSelection] = useState<Selection | null>(null);
+  const activeItem = activeSelection?.type === "contact"
+    ? contacts.find((c) => c.username === activeSelection.id) || null
+    : groups.find((g) => g.id === activeSelection?.id) || null;
+
+  const [messagesByUser, setMessagesByUser] = useState<Record<string, MessagePayload[]>>({});
   const [me, setMe] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [groups, setGroups] = useState<Group[]>([]);
   const [isLoadingGroups, setIsLoadingGroups] = useState<boolean>(true);
+  const [historyLoaded, setHistoryLoaded] = useState<Record<string, boolean>>({});
+  useEffect(() => {
+    const id = activeSelection?.id;
+    // If we have a selection and we HAVEN'T loaded its history yet
+    if (id && !historyLoaded[id]) {
+      fetchHistory(id);
+    }
+  }, [activeSelection?.id, historyLoaded]);
 
+  const handleSelect = (id: string, type: "contact" | "group") => {
+    setActiveSelection({ id, type });
+  };
   // TODO: AA
 
   useEffect(() => {
@@ -85,19 +102,13 @@ export default function ChatApp(): React.ReactElement {
 
     loadGroups();
   }, []);
-  // loading messages for the selected contact
-  useEffect(() => {
-    if (activeUser && !messagesByUser[activeUser.username]) {
-      fetchHistory(activeUser.username);
-    }
-  }, [activeUser]);
-
+  
   const sendMessage = (messageText: string) => {
-    if (!wsRef.current || !activeUser || !me || wsRef.current.readyState !== WebSocket.OPEN) return;
+    if (!wsRef.current || !activeSelection || !me || wsRef.current.readyState !== WebSocket.OPEN) return;
 
     const msg: MessagePayload = {
       sender_id: me,
-      receiver_id: activeUser.username,
+      receiver_id: activeSelection.id, // this should be username for contacts and group_id for groups
       body: messageText,
     };
 
@@ -126,7 +137,6 @@ export default function ChatApp(): React.ReactElement {
     const currentMessages = messagesByUser[contactUsername] || [];
 
     // If loading more, use the timestamp of the OLDEST message we have.
-    // Otherwise, use "now" to get the most recent 20.
     const lastSeen = isLoadMore && currentMessages.length > 0
       ? currentMessages[0].timestamp
       : Math.floor(Date.now() / 1000);
@@ -143,16 +153,30 @@ export default function ChatApp(): React.ReactElement {
         }),
       });
       const data = await res.json();
-      const history = [...data.messages].reverse(); // Array of MessagePayload
+      const history = [...data.messages].reverse();
 
       setMessagesByUser((prev) => {
         const existing = prev[contactUsername] || [];
-        return {
-          ...prev,
-          // add old messages to the start of the array
-          [contactUsername]: isLoadMore ? [...history, ...existing] : history,
-        };
+
+        if (isLoadMore) {
+          return {
+            ...prev,
+            [contactUsername]: [...history, ...existing],
+          };
+        } else {
+          const filteredHistory = history.filter(hMsg =>
+            !existing.some(eMsg =>
+              eMsg.timestamp === hMsg.timestamp && eMsg.body === hMsg.body
+            )
+          );
+
+          return {
+            ...prev,
+            [contactUsername]: [...filteredHistory, ...existing],
+          };
+        }
       });
+      setHistoryLoaded(prev => ({ ...prev, [contactUsername]: true }));
     } catch (err) {
       console.error("Failed to fetch history:", err);
     }
@@ -184,8 +208,8 @@ export default function ChatApp(): React.ReactElement {
     try {
       await ContactService.deleteContact(username);
       setContacts((prev) => prev.filter((c) => c.username !== username));
-      if (activeUser?.username === username) {
-        setActiveUser(null);
+      if (activeSelection?.id === username && activeSelection?.type === "contact") {
+        setActiveSelection(null);
       }
     } catch (error) {
       console.error("Delete failed:", error);
@@ -199,9 +223,9 @@ export default function ChatApp(): React.ReactElement {
       setContacts((prev) =>
         prev.map((c) => (c.username === contact.username ? { ...c, nickname: contact.nickname } : c))
       );
-      if (activeUser?.username === contact.username) {
-        setActiveUser({ ...activeUser, nickname: contact.nickname });
-      }
+      // if (activeUser?.username === contact.username) {
+      //   setActiveUser({ ...activeUser, nickname: contact.nickname });
+      // }
     } catch (error) {
       console.error("Update failed:", error);
     }
@@ -239,33 +263,92 @@ export default function ChatApp(): React.ReactElement {
     }
   };
 
+  const handleGroupDelete = async (groupId: string) => {
+    if (!groupId) return;
+    try {
+      await GroupService.deleteGroup(groupId);
+      // Remove from local state
+      setGroups((prev) => prev.filter((g) => g.id !== groupId));
+
+      // If the deleted group was active, clear the selection
+      if (activeSelection?.id === groupId && activeSelection?.type === "group") {
+        setActiveSelection(null);
+      }
+    } catch (error) {
+      console.error("Group delete failed:", error);
+    }
+  };
+
+  const handleGroupUpdate = async (groupId: string, groupData: { groupName: string; members: string[] }) => {
+    if (!groupId) return;
+
+    try {
+      // 1. Update Name
+      await GroupService.updateGroup(groupId, groupData.groupName);
+
+      // 2. Diff Members
+      const res = await GroupService.fetchGroupMembers(groupId);
+      const currentMemberIds = res.members.map((m: any) => m.user_id);
+
+      // Safety: Always include yourself
+      const desiredMembers = groupData.members.includes(me)
+        ? groupData.members
+        : [...groupData.members, me];
+
+      const toAdd = desiredMembers.filter(id => !currentMemberIds.includes(id));
+      const toRemove = currentMemberIds.filter(id => !desiredMembers.includes(id));
+
+      // 3. API Calls
+      await Promise.all([
+        ...toAdd.map(id => GroupService.addGroupMember(groupId, id)),
+        ...toRemove.map(id => GroupService.removeGroupMember(groupId, id))
+      ]);
+
+      // 4. Update UI State
+      setGroups((prev) =>
+        prev.map((g) => (g.id === groupId ? { ...g, name: groupData.groupName } : g))
+      );
+
+      console.log("Group sync complete");
+    } catch (error) {
+      console.error("Update failed:", error);
+    }
+  };
   // 3. User is authorized
   return (
     <div className="root-chat-container">
       <Dashboard
         contacts={contacts}
         groups={groups}
-        selectedUser={activeUser}
-        onSelect={setActiveUser}
+        activeSelection={activeSelection}
+        onSelect={handleSelect}
         onSave={handleSaveContact}
         onDelete={handleContactDelete}
         onUpdate={handleContactUpdate}
         onGroupSave={handleGroupSave}
+        // Pass group handlers to Dashboard if you want Edit/Delete from the sidebar
+        onDeleteGroup={handleGroupDelete}
+        onUpdateGroup={handleGroupUpdate}
       />
       <Chat
         me={me}
-        selectedContact={activeUser}
-        photo="/abelovci.png"
+        activeItem={activeItem}
+        activeType={activeSelection?.type}
+        allContacts={contacts} // Needed for the NewGroup modal inside Chat
+        photo="/account.svg"
         messagesByUser={messagesByUser}
         onSend={sendMessage}
         onDelete={handleContactDelete}
         onUpdate={handleContactUpdate}
+        onDeleteGroup={handleGroupDelete}
+        onUpdateGroup={handleGroupUpdate}
         onLoadMore={() => {
-          if (activeUser) fetchHistory(activeUser.username, true);
+          if (activeSelection?.type === "contact") {
+            fetchHistory(activeSelection.id, true);
+          }
+          // Add fetchGroupHistory(activeSelection.id, true) here later
         }}
       />
-      {/* ovaj infopanel je visak? */}
-      <InfoPanel />
     </div>
-  );
-}
+  )
+};
