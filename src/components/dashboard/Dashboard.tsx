@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Group } from "../../services/GroupService";
 import type { Contact, Selection } from "../ChatApp";
 import DashboardChats from "./DashboardChats";
@@ -19,6 +20,18 @@ interface DashboardProps {
 }
 
 export default function Dashboard(props: DashboardProps): React.ReactElement {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState<"all" | "groups">("all");
+  const filteredGroups = props.groups.filter(g =>
+    g.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const filteredContacts = activeFilter === "all"
+    ? props.contacts.filter(c =>
+      c.nickname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.username.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    : [];
+
   return (
     <div className="dashboard-container">
       <DashboardHeader
@@ -26,11 +39,14 @@ export default function Dashboard(props: DashboardProps): React.ReactElement {
         onSave={props.onSave}
         onGroupSave={props.onGroupSave}
       />
-      <DashboardSearch />
-      <DashboardFilter />
+      <DashboardSearch onSearchChange={setSearchQuery} />
+      <DashboardFilter
+        activeFilter={activeFilter}
+        onFilterChange={setActiveFilter}
+      />
       <DashboardChats
-        contacts={props.contacts}
-        groups={props.groups}
+        contacts={filteredContacts}
+        groups={filteredGroups}
         activeSelection={props.activeSelection}
         onSelect={props.onSelect}
         onDelete={props.onDelete}
