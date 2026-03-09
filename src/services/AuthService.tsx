@@ -1,5 +1,4 @@
-const API_URL = "http://localhost:8080";
-
+const API_URL = `http://${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}`;
 export const AuthService = {
   login: async (username: string, password: string) => {
     const res = await fetch(`${API_URL}/login`, {

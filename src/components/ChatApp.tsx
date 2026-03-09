@@ -19,6 +19,8 @@ export type Selection = {
 };
 
 export default function ChatApp(): React.ReactElement {
+  const BACKEND_URL = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}`;
+  
   const navigate = useNavigate();
   const wsRef = useRef<WebSocket | null>(null);
   const [contacts, setContacts] = useState<Contact[]>([]);
@@ -68,7 +70,7 @@ export default function ChatApp(): React.ReactElement {
     ContactService.fetchContacts().then((c) => setContacts(c.contacts));
 
     // WebSocket init
-    const ws = new WebSocket("ws://localhost:8080/ws");
+    const ws = new WebSocket(`ws://${BACKEND_URL}/ws`);
 
     ws.onopen = () => console.log("Connected");
     ws.onmessage = (event) => {
@@ -181,7 +183,7 @@ export default function ChatApp(): React.ReactElement {
       : Math.floor(Date.now() / 1000);
 
     try {
-      const res = await fetch("http://localhost:8080/loadMessages", {
+      const res = await fetch(`http://${BACKEND_URL}/loadMessages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

@@ -27,12 +27,13 @@ function RegTest() {
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    const BACKEND_URL = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}`;
     e.preventDefault();
     setLoading(true);
     setAnswer("");
 
     try {
-      const res = await fetch("http://localhost:8080/api/register", {
+      const res = await fetch(`http://${BACKEND_URL}/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
