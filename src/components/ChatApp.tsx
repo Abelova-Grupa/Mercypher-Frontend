@@ -102,14 +102,14 @@ export default function ChatApp(): React.ReactElement {
 
     loadGroups();
   }, []);
-  
+
   const sendMessage = (messageText: string) => {
     if (!wsRef.current || !activeSelection || !me || wsRef.current.readyState !== WebSocket.OPEN) return;
 
     const encodedBody = btoa(encodeURIComponent(messageText).replace(/%([0-9A-F]{2})/g,
-        function toSolidBytes(match, p1) {
-            return String.fromCharCode(Number('0x' + p1));
-        }));
+      function toSolidBytes(match, p1) {
+        return String.fromCharCode(Number('0x' + p1));
+      }));
 
     const msg: MessagePayload = {
       sender_id: me,
@@ -123,17 +123,51 @@ export default function ChatApp(): React.ReactElement {
     // handleIncomingMessage(msg)
   };
 
-  const handleIncomingMessage = (msg: MessagePayload) => {
-    const conversationId = msg.sender_id === me ? msg.receiver_id : msg.sender_id;
+  // const handleIncomingMessage = (msg: MessagePayload) => {
+  //   const conversationId = msg.sender_id === me ? msg.receiver_id : msg.sender_id;
 
-    if (!conversationId) return;
+  //   if (!conversationId) return;
+
+  //   setMessagesByUser((prev) => {
+  //     const existingMessages = prev[conversationId] || [];
+
+  //     return {
+  //       ...prev,
+  //       [conversationId]: [...existingMessages, msg],
+  //     };
+  //   });
+  // };
+
+  const handleIncomingMessage = (msg: MessagePayload) => {
+    // Regex to check for standard UUID format
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(msg.receiver_id);
+
+    let conversationKey: string;
+
+    if (isUUID) {
+      // If receiver is a UUID, it's a group chat. Key = Group ID.
+      conversationKey = msg.receiver_id;
+    } else {
+      // If not a UUID, it's a private chat. 
+      // Key = the person who isn't 'me'.
+      conversationKey = msg.sender_id === me ? msg.receiver_id : (msg.sender_id || "");
+    }
+
+    console.log(`[WS DEBUG] Target Key: ${conversationKey} | From: ${msg.sender_id} | UUID: ${isUUID}`);
+
+    if (!conversationKey) return;
 
     setMessagesByUser((prev) => {
-      const existingMessages = prev[conversationId] || [];
+      const existing = prev[conversationKey] || [];
+
+      // Prevent duplicates
+      if (existing.some(m => m.timestamp === msg.timestamp && m.body === msg.body)) {
+        return prev;
+      }
 
       return {
         ...prev,
-        [conversationId]: [...existingMessages, msg],
+        [conversationKey]: [...existing, msg],
       };
     });
   };

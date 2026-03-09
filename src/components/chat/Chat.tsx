@@ -72,7 +72,7 @@ export default function Chat(props: ChatProps): React.ReactElement {
 
   const handleScroll = () => {
     const container = chatContainerRef.current;
-    if (container && container.scrollTop === 0 && props.activeItem) {
+    if (container && container.scrollTop < 5 && props.activeItem) {
       props.onLoadMore();
     }
   };

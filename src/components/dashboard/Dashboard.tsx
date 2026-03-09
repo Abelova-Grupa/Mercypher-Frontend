@@ -22,11 +22,11 @@ interface DashboardProps {
 export default function Dashboard(props: DashboardProps): React.ReactElement {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<"all" | "groups">("all");
-  const filteredGroups = props.groups.filter(g =>
+  const filteredGroups = (props.groups ?? []).filter(g =>
     g.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
   const filteredContacts = activeFilter === "all"
-    ? props.contacts.filter(c =>
+    ? (props.contacts ?? []).filter(c =>
       c.nickname.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.username.toLowerCase().includes(searchQuery.toLowerCase())
     )
@@ -35,7 +35,7 @@ export default function Dashboard(props: DashboardProps): React.ReactElement {
   return (
     <div className="dashboard-container">
       <DashboardHeader
-        contacts={props.contacts}
+        contacts={props.contacts ?? []}
         onSave={props.onSave}
         onGroupSave={props.onGroupSave}
       />
