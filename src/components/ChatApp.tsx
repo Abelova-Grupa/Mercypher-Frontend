@@ -7,6 +7,7 @@ import { ContactService } from "../services/ContactService";
 import type { MessagePayload } from "../types/websocket-wrappers";
 import { AuthService } from "../services/AuthService";
 import { useNavigate } from "react-router";
+import { GroupService, type Group } from "../services/GroupService";
 
 export type Contact = {
   username: string;
@@ -23,6 +24,8 @@ export default function ChatApp(): React.ReactElement {
   >({});
   const [me, setMe] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [isLoadingGroups, setIsLoadingGroups] = useState<boolean>(true);
 
   // TODO: AA
 
@@ -66,6 +69,22 @@ export default function ChatApp(): React.ReactElement {
       wsRef.current = null;
     }
   }, [me]);
+
+  useEffect(() => {
+    const loadGroups = async () => {
+      try {
+        setIsLoadingGroups(true);
+        const res = await GroupService.fetchUserGroups();
+        setGroups(res.groups);
+      } catch (err) {
+        console.error("Failed to load user groups:", err);
+      } finally {
+        setIsLoadingGroups(false);
+      }
+    };
+
+    loadGroups();
+  }, []);
   // loading messages for the selected contact
   useEffect(() => {
     if (activeUser && !messagesByUser[activeUser.username]) {
@@ -200,16 +219,38 @@ export default function ChatApp(): React.ReactElement {
     }
   };
 
+  const handleGroupSave = async (groupData: { groupName: string; members: string[] }) => {
+    try {
+      // 1. Create the group
+      const createRes = await GroupService.createGroup({ name: groupData.groupName });
+      const newGroup = createRes.group;
+
+      // 2. Add members
+      const memberPromises = groupData.members.map((userId) =>
+        GroupService.addGroupMember(newGroup.id, userId)
+      );
+      await Promise.all(memberPromises);
+
+      // 3. Update local state so it shows up in the list
+      setGroups((prev) => [newGroup, ...prev]);
+
+    } catch (err) {
+      console.error("Group creation failed:", err);
+    }
+  };
+
   // 3. User is authorized
   return (
     <div className="root-chat-container">
       <Dashboard
         contacts={contacts}
+        groups={groups}
         selectedUser={activeUser}
         onSelect={setActiveUser}
         onSave={handleSaveContact}
         onDelete={handleContactDelete}
         onUpdate={handleContactUpdate}
+        onGroupSave={handleGroupSave}
       />
       <Chat
         me={me}
