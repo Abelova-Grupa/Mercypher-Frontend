@@ -27,7 +27,7 @@ export default function RegisterForm(): React.ReactElement {
     setIsLoading(true);
     setError(null);
 
-    const url = `http://${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/register`;
+    const url = `https://${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/register`;
     try {
       const response = await fetch(url, {
         method: "POST",

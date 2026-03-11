@@ -183,7 +183,7 @@ export default function ChatApp(): React.ReactElement {
       : Math.floor(Date.now() / 1000);
 
     try {
-      const res = await fetch(`http://${BACKEND_URL}/loadMessages`, {
+      const res = await fetch(`https://${BACKEND_URL}/loadMessages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

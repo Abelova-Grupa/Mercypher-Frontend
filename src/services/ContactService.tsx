@@ -1,4 +1,4 @@
-const API_URL = `http://${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}`;
+const API_URL = `https://${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}`;
 
 export const ContactService = {
   createContact: async (contactObj: { contact: string; nickname: string }) => {

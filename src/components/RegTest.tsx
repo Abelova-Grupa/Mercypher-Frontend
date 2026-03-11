@@ -33,7 +33,7 @@ function RegTest() {
     setAnswer("");
 
     try {
-      const res = await fetch(`http://${BACKEND_URL}/api/register`, {
+      const res = await fetch(`https://${BACKEND_URL}/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
