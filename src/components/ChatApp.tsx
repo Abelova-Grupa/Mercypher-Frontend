@@ -33,7 +33,7 @@ export default function ChatApp(): React.ReactElement {
   const [messagesByUser, setMessagesByUser] = useState<Record<string, MessagePayload[]>>({});
   const [me, setMe] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingGroups, setIsLoadingGroups] = useState<boolean>(true);
+  // const [isLoadingGroups, setIsLoadingGroups] = useState<boolean>(true);
   const [historyLoaded, setHistoryLoaded] = useState<Record<string, boolean>>({});
   useEffect(() => {
     const id = activeSelection?.id;
@@ -92,13 +92,13 @@ export default function ChatApp(): React.ReactElement {
   useEffect(() => {
     const loadGroups = async () => {
       try {
-        setIsLoadingGroups(true);
+        // setIsLoadingGroups(true);
         const res = await GroupService.fetchUserGroups();
         setGroups(res.groups);
       } catch (err) {
         console.error("Failed to load user groups:", err);
       } finally {
-        setIsLoadingGroups(false);
+        // setIsLoadingGroups(false);
       }
     };
 
@@ -110,6 +110,7 @@ export default function ChatApp(): React.ReactElement {
 
     const encodedBody = btoa(encodeURIComponent(messageText).replace(/%([0-9A-F]{2})/g,
       function toSolidBytes(match, p1) {
+        match; // "ignored"
         return String.fromCharCode(Number('0x' + p1));
       }));
 

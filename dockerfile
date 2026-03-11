@@ -3,8 +3,8 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 # Define build-time arguments
-ARG VITE_BACKEND_HOST
-ARG VITE_BACKEND_PORT
+ARG VITE_BACKEND_HOST=gateway-mercypher-prod-itan-01.kindmoss-8055851a.italynorth.azurecontainerapps.io
+ARG VITE_BACKEND_PORT=443
 
 # Set them as environment variables so Vite sees them during 'npm run build'
 ENV VITE_BACKEND_HOST=$VITE_BACKEND_HOST
@@ -18,6 +18,7 @@ RUN npm run build
 # Stage 2: Serve
 FROM nginx:stable-alpine
 COPY --from=build /app/dist /usr/share/nginx/html
+COPY .env /usr/share/nginx/html/.env
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
